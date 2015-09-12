@@ -34,6 +34,8 @@ public class StatsBuild {
 
   private long queueTime;
 
+  private StatsTestResult testsResult;
+
   public String getCiUrl() {
     return ciUrl;
   }
@@ -137,4 +139,9 @@ public class StatsBuild {
   public void setQueueTime(long queueTime) {
     this.queueTime = queueTime;
   }
+
+  public StatsTestResult getTestsResult() { return testsResult;  }
+
+  public void setTestsResult(StatsTestResult testsResult) { this.testsResult = testsResult; }
+
 }

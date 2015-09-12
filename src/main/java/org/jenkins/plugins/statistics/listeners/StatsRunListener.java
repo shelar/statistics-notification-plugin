@@ -1,16 +1,18 @@
 package org.jenkins.plugins.statistics.listeners;
 
-import org.jenkins.plugins.statistics.model.StatsBuild;
-import org.jenkins.plugins.statistics.model.SCMInfo;
-import org.jenkins.plugins.statistics.model.SlaveInfo;
-import org.jenkins.plugins.statistics.util.*;
 import hudson.EnvVars;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.model.*;
 import hudson.model.listeners.RunListener;
 import hudson.triggers.SCMTrigger;
 import hudson.triggers.TimerTrigger;
 import jenkins.model.Jenkins;
+import org.jenkins.plugins.statistics.model.SCMInfo;
+import org.jenkins.plugins.statistics.model.SlaveInfo;
+import org.jenkins.plugins.statistics.model.StatsBuild;
+import org.jenkins.plugins.statistics.model.StatsTestResult;
+import org.jenkins.plugins.statistics.util.*;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -57,6 +59,7 @@ public class StatsRunListener extends RunListener<Run<?, ?>> {
       addSCMInfo(run, listener, build);
       addParameters(run, build);
       addSlaveInfo(run, build);
+      addTestsResult(run, build);
       RestClientUtil.postToService(getRestUrl(), build);
       LOGGER.log(Level.INFO, "Started build and its status is : " + buildResult +
           " and start time is : " + run.getTimestamp().getTime());
@@ -194,6 +197,20 @@ public class StatsRunListener extends RunListener<Run<?, ?>> {
     }
   }
 
+  /**
+   * Get the result of the tests from the build and add it to model.
+   *
+   * @param run
+   * @param build
+   */
+  private void addTestsResult(Run<?, ?> run,
+                          StatsBuild build) {
+
+    FilePath currentWorkspace = run.getExecutor().getCurrentWorkspace();
+    StatsTestResult testResult = TestReportUtil.getTestResults(currentWorkspace);
+    build.setTestsResult(testResult);
+  }
+
   @Override
   /**
    * Update the build status and duration.
@@ -214,6 +231,7 @@ public class StatsRunListener extends RunListener<Run<?, ?>> {
       // Capture duration in milliseconds.
       build.setDuration(run.getDuration());
       build.setEndTime(Calendar.getInstance().getTime());
+      addTestsResult(run, build);
       RestClientUtil.putToService(getRestUrl(), build);
       LOGGER.log(Level.INFO, run.getParent().getName()+" build is completed " +
           "its status is : " + buildResult +
