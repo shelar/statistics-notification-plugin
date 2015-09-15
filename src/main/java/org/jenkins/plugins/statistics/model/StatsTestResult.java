@@ -5,9 +5,6 @@ package org.jenkins.plugins.statistics.model;
  */
 public class StatsTestResult {
 
-  static public String TESTNG_REPORT_FILTER = "**/testng-results.xml";
-  static public String JUNIT_ANT_REPORT_FILTER = "**/TESTS-TestSuites.xml";
-
   // Number of tests failed.
   private int failed;
 
@@ -52,11 +49,20 @@ public class StatsTestResult {
     this.total = total;
   }
 
-  public void setResult(int total, int passed, int failed, int skipped) {
-    setTotal(total);
-    setPassed(passed);
-    setFailed(failed);
-    setSkipped(skipped);
+  public void setResult(int totalCount, int passedCount, int failedCount, int
+      skippedCount) {
+    setTotal(totalCount);
+    setPassed(passedCount);
+    setFailed(failedCount);
+    setSkipped(skippedCount);
+  }
+
+  public void addResult(int totalCount, int passedCount, int failedCount, int
+      skippedCount) {
+    setTotal(totalCount + getTotal());
+    setPassed(passedCount + getPassed());
+    setFailed(failedCount + getFailed());
+    setSkipped(skippedCount + getSkipped());
   }
 
   @Override

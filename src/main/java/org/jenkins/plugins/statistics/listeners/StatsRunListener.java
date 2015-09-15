@@ -59,7 +59,6 @@ public class StatsRunListener extends RunListener<Run<?, ?>> {
       addSCMInfo(run, listener, build);
       addParameters(run, build);
       addSlaveInfo(run, build);
-      addTestsResult(run, build);
       RestClientUtil.postToService(getRestUrl(), build);
       LOGGER.log(Level.INFO, "Started build and its status is : " + buildResult +
           " and start time is : " + run.getTimestamp().getTime());
